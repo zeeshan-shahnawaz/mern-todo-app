@@ -1,0 +1,16 @@
+.copyright-footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+.app-container {
+  padding-bottom: 60px; /* Add padding to prevent content from being hidden behind the footer */
+} 
