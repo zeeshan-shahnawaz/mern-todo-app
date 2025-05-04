@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { API_URL } from '../config';
 
 function Signup() {
-  const [form, setForm] = useState({ email: '', password: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -20,17 +20,19 @@ function Signup() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ name, email, password })
+        body: JSON.stringify(form)
       });
       
+      const data = await response.json();
+      
       if (response.ok) {
-        const data = await response.json();
         localStorage.setItem('token', data.token);
         navigate('/todos');
       } else {
-        setError('Failed to create account. Please try again.');
+        setError(data.msg || data.error || 'Failed to create account. Please try again.');
       }
     } catch (error) {
+      console.error('Signup error:', error);
       setError('An error occurred. Please try again.');
     }
   };
@@ -44,6 +46,17 @@ function Signup() {
         {error && <div className="error-message">{error}</div>}
         
         <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <input
+              type="text"
+              name="name"
+              placeholder="Name"
+              value={form.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
+          
           <div className="form-group">
             <input
               type="email"
