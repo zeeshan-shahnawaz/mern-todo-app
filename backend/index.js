@@ -25,16 +25,14 @@ app.use((err, req, res, next) => {
 // MongoDB connection
 const MONGODB_URI = 'mongodb://localhost:27017/todoApp';
 
-mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log("✅ Connected to MongoDB");
-    const PORT =process.env.PORT || 5000;
+    const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
   })
   .catch((err) => {
     console.error("❌ MongoDB connection failed:", err);
     process.exit(1);
   });
+
