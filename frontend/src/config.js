@@ -1,0 +1,1 @@
+export const API_URL = 'https://mern-todo-app-backend-sp2b.onrender.com'; 

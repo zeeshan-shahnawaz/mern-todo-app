@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { API_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
 import './TodoList.css';
 
@@ -25,10 +25,15 @@ function TodoList() {
     }
 
     try {
-      const res = await axios.get('http://localhost:5000/api/todos', {
-        headers: { Authorization: currentToken },
+      const response = await fetch(`${API_URL}/api/todos`, {
+        headers: {
+          'Authorization': `Bearer ${currentToken}`
+        }
       });
-      setTodos(res.data);
+      if (response.ok) {
+        const data = await response.json();
+        setTodos(data);
+      }
     } catch (error) {
       console.error('Error fetching todos:', error);
       if (error.response?.status === 401) {
@@ -46,20 +51,20 @@ function TodoList() {
     }
 
     try {
-      const response = await axios.post(
-        'http://localhost:5000/api/todos',
-        { text },
-        { 
-          headers: { Authorization: currentToken },
-          validateStatus: (status) => status < 500
-        }
-      );
+      const response = await fetch(`${API_URL}/api/todos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentToken}`
+        },
+        body: JSON.stringify({ text })
+      });
       
-      if (response.status === 200 || response.status === 201) {
+      if (response.ok) {
         setText('');
         await fetchTodos();
       } else {
-        console.error('Failed to add todo:', response.data);
+        console.error('Failed to add todo:', response.statusText);
       }
     } catch (error) {
       console.error('Error adding todo:', error);
@@ -77,12 +82,19 @@ function TodoList() {
     }
 
     try {
-      await axios.put(
-        `http://localhost:5000/api/todos/${id}`,
-        { completed: !completed },
-        { headers: { Authorization: currentToken } }
-      );
-      await fetchTodos();
+      const response = await fetch(`${API_URL}/api/todos/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentToken}`
+        },
+        body: JSON.stringify({ completed: !completed })
+      });
+      if (response.ok) {
+        await fetchTodos();
+      } else {
+        console.error('Error toggling todo:', response.statusText);
+      }
     } catch (error) {
       console.error('Error toggling todo:', error);
       if (error.response?.status === 401) {
@@ -99,10 +111,17 @@ function TodoList() {
     }
 
     try {
-      await axios.delete(`http://localhost:5000/api/todos/${id}`, {
-        headers: { Authorization: currentToken },
+      const response = await fetch(`${API_URL}/api/todos/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${currentToken}`
+        }
       });
-      await fetchTodos();
+      if (response.ok) {
+        await fetchTodos();
+      } else {
+        console.error('Error deleting todo:', response.statusText);
+      }
     } catch (error) {
       console.error('Error deleting todo:', error);
       if (error.response?.status === 401) {
@@ -125,21 +144,21 @@ function TodoList() {
     }
 
     try {
-      const response = await axios.put(
-        `http://localhost:5000/api/todos/${id}`,
-        { text: editText },
-        { 
-          headers: { Authorization: currentToken },
-          validateStatus: (status) => status < 500
-        }
-      );
+      const response = await fetch(`${API_URL}/api/todos/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${currentToken}`
+        },
+        body: JSON.stringify({ text: editText })
+      });
 
-      if (response.status === 200) {
+      if (response.ok) {
         setEditingId(null);
         setEditText('');
         await fetchTodos();
       } else {
-        console.error('Failed to update todo:', response.data);
+        console.error('Failed to update todo:', response.statusText);
       }
     } catch (error) {
       console.error('Error updating todo:', error);

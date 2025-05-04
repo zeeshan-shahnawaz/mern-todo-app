@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { API_URL } from '../config';
+import './Signup.css';
 
 function Signup() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -12,13 +13,26 @@ function Signup() {
     setError('');
   };
 
-  const handleSignup = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/auth/signup', form);
-      navigate('/login');
-    } catch (err) {
-      setError(err.response?.data?.msg || err.response?.data?.error || 'Signup failed. Please try again.');
+      const response = await fetch(`${API_URL}/api/auth/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, email, password })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token);
+        navigate('/todos');
+      } else {
+        setError('Failed to create account. Please try again.');
+      }
+    } catch (error) {
+      setError('An error occurred. Please try again.');
     }
   };
 
@@ -30,7 +44,7 @@ function Signup() {
         
         {error && <div className="error-message">{error}</div>}
         
-        <form onSubmit={handleSignup} className="auth-form">
+        <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
             <input
               type="email"

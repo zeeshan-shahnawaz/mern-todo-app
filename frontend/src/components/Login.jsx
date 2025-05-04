@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { API_URL } from '../config';
+import './Login.css';
 
 function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -15,11 +16,23 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', form);
-      localStorage.setItem('token', res.data.token);
-      navigate('/todos');
-    } catch (err) {
-      setError(err.response?.data?.msg || err.response?.data?.error || 'Login failed. Please try again.');
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email: form.email, password: form.password })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token);
+        navigate('/todos');
+      } else {
+        setError('Invalid email or password');
+      }
+    } catch (error) {
+      setError('An error occurred. Please try again.');
     }
   };
 
