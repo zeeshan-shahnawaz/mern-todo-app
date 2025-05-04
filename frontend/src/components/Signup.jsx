@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { API_URL } from '../config';
-import './Signup.css';
 
 function Signup() {
   const [form, setForm] = useState({ email: '', password: '' });

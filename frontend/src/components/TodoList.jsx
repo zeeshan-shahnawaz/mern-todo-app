@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_URL } from '../config';
 import { useNavigate } from 'react-router-dom';
-import './TodoList.css';
 
 function TodoList() {
   const navigate = useNavigate();
